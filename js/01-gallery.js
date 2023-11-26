@@ -18,13 +18,23 @@ function selectImage(event) {
   const originalImg = galleryItems.find(
     (item) => item.original === currentImg
   ).original;
-  const instance = basicLightbox.create(`
-      <img src=${originalImg} >
-  `);
-  instance.show();
-  document.addEventListener("keydown", ({ key }) => {
+  function onKeyUp({ key }) {
     if (key === "Escape") {
       instance.close();
     }
-  });
+  }
+  const instance = basicLightbox.create(
+    `
+      <img src=${originalImg} >
+  `,
+    {
+      onShow: () => {
+        document.addEventListener("keyup", onKeyUp);
+      },
+      onClose: () => {
+        document.removeEventListener("keyup", onKeyUp);
+      },
+    }
+  );
+  instance.show();
 }
