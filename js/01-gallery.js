@@ -3,38 +3,34 @@ import { galleryItems } from "./gallery-items.js";
 const list = document.querySelector(".gallery");
 const markup = galleryItems
   .map(
-    (item) =>
-      `<li class=gallery__item><a class=gallery__link href=${item.original}><img class='gallery__image' src=${item.preview} alt=${item.preview} data-source=${item.original}></a></li>`
+    ({ preview, original, description }) =>
+      `<li class=gallery__item><a class=gallery__link href=${original}><img class='gallery__image' src=${preview} alt=${description} data-source=${original}></a></li>`
   )
   .join("");
 list.insertAdjacentHTML("afterbegin", markup);
-document.addEventListener("click", selectImage);
+list.addEventListener("click", selectImage);
+
+const instance = basicLightbox.create(` <img src=''>`, {
+  onShow: () => {
+    document.addEventListener("keyup", onEscPress);
+  },
+  onClose: () => {
+    document.removeEventListener("keyup", onEscPress);
+  },
+});
+
 function selectImage(event) {
+  event.preventDefault();
   if (event.target.nodeName !== "IMG") {
     return;
   }
-  event.preventDefault();
-  const currentImg = event.target.dataset.source;
-  const originalImg = galleryItems.find(
-    (item) => item.original === currentImg
-  ).original;
-  function onKeyUp({ key }) {
-    if (key === "Escape") {
-      instance.close();
-    }
-  }
-  const instance = basicLightbox.create(
-    `
-      <img src=${originalImg} >
-  `,
-    {
-      onShow: () => {
-        document.addEventListener("keyup", onKeyUp);
-      },
-      onClose: () => {
-        document.removeEventListener("keyup", onKeyUp);
-      },
-    }
-  );
+  instance.element().querySelector("img").src = event.target.dataset.source;
   instance.show();
+}
+
+function onEscPress({ key }) {
+  if (key === "Escape") {
+    instance.close();
+    return;
+  }
 }
