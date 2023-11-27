@@ -12,10 +12,10 @@ list.addEventListener("click", selectImage);
 
 const instance = basicLightbox.create(` <img src=''>`, {
   onShow: () => {
-    document.addEventListener("keyup", onEscPress);
+    document.addEventListener("keydown", onEscPress);
   },
   onClose: () => {
-    document.removeEventListener("keyup", onEscPress);
+    document.removeEventListener("keydown", onEscPress);
   },
 });
 
